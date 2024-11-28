@@ -1,6 +1,7 @@
 #ifndef DIFFERENCIATOR_H
 #define DIFFERENCIATOR_H
 
+#include "math.h"
 #include "node.h"
 #include "binary_tree_func.h"
 

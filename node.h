@@ -38,6 +38,7 @@ enum Types
 struct Node
 {
     char type;
+    char sign;
     Node_t value;
     Node* left;
     Node* right;

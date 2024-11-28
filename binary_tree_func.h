@@ -3,23 +3,23 @@
 
 #include "node.h"
 
-#define _NUM(x) CreateNode(NUM, x, nullptr, nullptr)
-#define _x CreateNode(VAR, var_v, nullptr, nullptr)
+#define _NUM(x) CreateNode(NUM, 1, x, nullptr, nullptr)
+#define _x CreateNode(VAR, 1, var_v, nullptr, nullptr)
 
-#define _ADD(a, b) CreateNode(OP, add_v, a, b)
-#define _SUB(a, b) CreateNode(OP, sub_v, a, b)
-#define _DIV(a, b) CreateNode(OP, div_v, a, b)
-#define _MUL(a, b) CreateNode(OP, mul_v, a, b)
+#define _ADD(a, b) CreateNode(OP, 1, add_v, a, b)
+#define _SUB(a, b) CreateNode(OP, 1, sub_v, a, b)
+#define _DIV(a, b) CreateNode(OP, 1, div_v, a, b)
+#define _MUL(a, b) CreateNode(OP, 1, mul_v, a, b)
 
-#define _EXP(a) CreateNode(FUNC, exp_f, a, nullptr)
-#define _LN(a) CreateNode(FUNC, ln_f, a, nullptr)
-#define _POW(a, b) CreateNode(FUNC, pow_f, a, b)
-#define _SQRT(a) CreateNode(FUNC, sqrt_f, a, nullptr)
-#define _SIN(a) CreateNode(FUNC, sin_f, a, nullptr)
-#define _COS(a) CreateNode(FUNC, cos_f, a, nullptr)
-#define _TG(a) CreateNode(FUNC, tg_f, a, nullptr)
+#define _EXP(a) CreateNode(FUNC, 1, exp_f, a, nullptr)
+#define _LN(a) CreateNode(FUNC, 1, ln_f, a, nullptr)
+#define _POW(a, b) CreateNode(FUNC, 1, pow_f, a, b)
+#define _SQRT(a) CreateNode(FUNC, 1, sqrt_f, a, nullptr)
+#define _SIN(a) CreateNode(FUNC, 1, sin_f, a, nullptr)
+#define _COS(a) CreateNode(FUNC, 1, cos_f, a, nullptr)
+#define _TG(a) CreateNode(FUNC, 1, tg_f, a, nullptr)
 
-Node* CreateNode(char type, Node_t val, Node* lnode, Node* rnode);
+Node* CreateNode(char type, char sign, Node_t val, Node* lnode, Node* rnode);
 
 Node* CopyNode(Node* node);
 
