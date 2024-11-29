@@ -61,7 +61,7 @@ Node* GetE(const char* s)
 
 Node* GetT(const char* s)
 {
-    Node* val = GetP(s);
+    Node* val = GetPow(s);
     if (!val) return nullptr;
     SkipSpaces(s);
 
@@ -70,7 +70,7 @@ Node* GetT(const char* s)
         int op = s[p];
         p++;
 
-        Node* val2 = GetP(s);
+        Node* val2 = GetPow(s);
         if (!val2) return nullptr;
         SkipSpaces(s);
 
@@ -82,6 +82,29 @@ Node* GetT(const char* s)
         {
             val = _DIV(val, CopyNode(val2));
         }
+
+        free(val2);
+        SkipSpaces(s);
+    }
+    
+    return val;
+}
+
+Node* GetPow(const char* s)
+{
+    Node* val = GetP(s);
+    if (!val) return nullptr;
+    SkipSpaces(s);
+
+    while (s[p] == '^')
+    {
+        p++;
+
+        Node* val2 = GetP(s);
+        if (!val2) return nullptr;
+        SkipSpaces(s);
+
+        val = _POW(val, CopyNode(val2));
 
         free(val2);
         SkipSpaces(s);
@@ -114,11 +137,11 @@ Node* GetP(const char* s)
     }
     else
     {
-        return GetFunc(s);
+        return GetArg(s);
     }
 }
 
-Node* GetFunc(const char* s)
+Node* GetArg(const char* s)
 {
     char sign = 1;
     SkipSpaces(s);
@@ -127,19 +150,19 @@ Node* GetFunc(const char* s)
         p++;
         sign = -1;
     }
-    Node* node = GetArg(s);
+    Node* node = GetOperand(s);
     if (node)
     {
         node->sign = sign;
         return node;
     }
 
-    node = GetFuncName(s);
+    node = GetFunc(s);
     if (node) node->sign = sign;
     return node;
 }
 
-Node* GetArg(const char* s)
+Node* GetOperand(const char* s)
 {
     Node* node = GetN(s);
 
@@ -182,9 +205,9 @@ Node* GetX(const char* s)
     return nullptr;
 }
 
-Node* GetFuncName(const char* s)
+Node* GetFunc(const char* s)
 {
-    Node* node = GetWord(s);
+    Node* node = GetFuncName(s);
     if (!node) return nullptr;
     SkipSpaces(s);
 
@@ -209,7 +232,7 @@ Node* GetFuncName(const char* s)
     return nullptr;
 }
 
-Node* GetWord(const char* s)
+Node* GetFuncName(const char* s)
 {
     char* str = (char*) calloc(Max_Size_Name + 1, sizeof(char));
     int index = 0;
