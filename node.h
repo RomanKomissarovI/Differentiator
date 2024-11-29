@@ -6,6 +6,7 @@
 #endif // format_tree
 
 typedef long long Node_t;
+const int Num_Func = 7;
 
 enum Values
 {

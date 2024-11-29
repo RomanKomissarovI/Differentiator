@@ -3,6 +3,8 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
+#include <ctype.h>
 #include "node.h"
 #include "binary_tree_func.h"
 
@@ -14,9 +16,17 @@ Node* GetT(const char* s);
 
 Node* GetP(const char* s);
 
+Node* GetFunc(const char* s);
+
 Node* GetArg(const char* s);
 
 Node* GetN(const char* s);
+
+Node* GetX(const char* s);
+
+Node* GetFuncName(const char* s);
+
+Node* GetWord(const char* s);
 
 void SkipSpaces(const char* s);
 

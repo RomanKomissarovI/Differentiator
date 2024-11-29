@@ -9,12 +9,12 @@ int main()
 {  
     //FILE* data_file = fopen("output.txt", "r");
 
-    //char s[1000];
-    //scanf("%[^\n]", s);
+    char s[1000];
+    scanf("%[^\n]", s);
 
-    Node* root = _MUL(_x, _SIN(_LN(_x)));
+    //Node* root = _POW(_x, _ADD(_x, _NUM(3)));
     
-    //Node* root = GetG(s);
+    Node* root = GetG(s);
     Node* d = Diff(root);
 
     TreePrint(root);

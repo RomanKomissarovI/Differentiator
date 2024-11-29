@@ -8,7 +8,7 @@
 Node* Diff(Node* node)
 {
     if (node->type == NUM) return _NUM(0);
-    if (node->type == VAR) return _NUM(1);
+    if (node->type == VAR) return _NUM(1 * node->sign);
     if (node->type == OP) 
     {
         switch (node->value)
@@ -99,6 +99,11 @@ Node* Simplification(Node* oper)
         // 0 - ...
         if ((oper->value == sub_v) && (oper->left->type == NUM && oper->left->value == 0))
         {
+            if (oper->right->type == NUM)
+            {
+                oper->right->value *= -1;
+                return oper->right;
+            }
             oper->right->sign *= -1;
             return oper->right;
         }
