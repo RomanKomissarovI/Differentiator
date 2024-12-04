@@ -15,10 +15,10 @@ Node* Diff(Node* node)
         {
             case add_v: return S(_ADD(Diff(node->left), Diff(node->right)));
             case sub_v: return S(_SUB(Diff(node->left), Diff(node->right)));
-            case mul_v: return S(_ADD(S(_MUL(Diff(node->left), S(node->right))),
-                                  S(_MUL(S(node->left), Diff(node->right)))));
-            case div_v: return S(_DIV(S(_SUB(S(_MUL(Diff(node->left), S(node->right))), S(_MUL(S(node->left), Diff(node->right))))),
-                                  S(_MUL(S(node->right), S(node->right)))));
+            case mul_v: return S(_ADD(S(_MUL(Diff(node->left), S(CopyNode(node->right)))),
+                                  S(_MUL(S(CopyNode(node->left)), Diff(node->right)))));
+            case div_v: return S(_DIV(S(_SUB(S(_MUL(Diff(node->left), S(CopyNode(node->right)))), S(_MUL(S(CopyNode(node->left)), Diff(node->right))))),
+                                  S(_MUL(S(CopyNode(node->right)), S(CopyNode(node->right))))));
             default: 
                 printf("Error input data\n");
                 return _NUM(0);
@@ -28,13 +28,13 @@ Node* Diff(Node* node)
     {
         switch (node->value)
         {
-            case exp_f: return S(_MUL(S(node), Diff(node->left)));
-            case ln_f: return S(_DIV(Diff(node->left), S(node->left)));
-            case pow_f: return Diff(_EXP(S(_MUL(S(_LN(node->left)), S(node->right)))));
-            case sqrt_f: return S(_DIV(Diff(node->left), S(_MUL(S(node), _NUM(2)))));
-            case sin_f: return S(_MUL(Diff(node->left), S(_COS(S(node->left)))));
-            case cos_f: return  S(_MUL(S(_MUL(Diff(node->left), S(_SIN(S(node->left))))), _NUM(-1)));
-            case tg_f: return S(_DIV(Diff(node->left), S(_POW(S(_COS(S(node->left))), _NUM(2)))));
+            case exp_f: return S(_MUL(S(CopyNode(node)), Diff(node->left)));
+            case ln_f: return S(_DIV(Diff(node->left), S(CopyNode(node->left))));
+            case pow_f: return Diff(_EXP(S(_MUL(S(_LN(CopyNode(node->left))), S(CopyNode(node->right))))));
+            case sqrt_f: return S(_DIV(Diff(node->left), S(_MUL(S(CopyNode(node)), _NUM(2)))));
+            case sin_f: return S(_MUL(Diff(node->left), S(_COS(S(CopyNode(node->left))))));
+            case cos_f: return  S(_MUL(S(_MUL(Diff(node->left), S(_SIN(S(CopyNode(node->left)))))), _NUM(-1)));
+            case tg_f: return S(_DIV(Diff(node->left), S(_POW(S(_COS(S(CopyNode(node->left)))), _NUM(2)))));
             default: 
                 printf("Error input data\n");
                 return _NUM(0);
@@ -170,49 +170,57 @@ Node* Simplification(Node* oper)
         return oper->left->left;
     }
 
+    if (oper->left && oper->right && oper->left->type == NUM && oper->right->type == NUM)
+    {
+        if (oper->value == add_v)
+        {
+            return _NUM(oper->left->value + oper->right->value);
+        }
+        if (oper->value == mul_v)
+        {
+            return _NUM(oper->left->value * oper->right->value);
+        }
+        if (oper->value == sub_v)
+        {
+            return _NUM(oper->left->value - oper->right->value);
+        }
+        if (oper->value == div_v)
+        {
+            Node_t lv = oper->left->value;
+            Node_t rv = oper->right->value;
+
+            if (lv % rv == 0)
+            {
+                return _NUM(lv / rv);
+            }
+            Node_t gcd = Gcd(lv, rv);
+            return _DIV(_NUM(lv / gcd), _NUM(rv / gcd));
+        }
+    }
     if (NodeEqual(oper->left, oper->right))
     {
         if (oper->value == add_v)
         {
-            if (oper->left->type == NUM)
-            {
-                return _NUM(oper->left->value + oper->right->value);
-            }
+            return _MUL(oper->left, _NUM(2));
         }
         if (oper->value == mul_v)
         {
-            if (oper->left->type == NUM)
-            {
-                return _NUM(oper->left->value * oper->right->value);
-            }
+            return _POW(oper->left, _NUM(2));
         }
         if (oper->value == sub_v)
         {
-            if (oper->left->type == NUM)
-            {
-                return _NUM(oper->left->value - oper->right->value);
-            }
+            return _NUM(0);
         }
-        if (oper->value == div_v)
+        if (oper->left->type == NUM && oper->right->type == NUM)
         {
-            if (oper->left->type == NUM)
-            {
-                Node_t lv = oper->left->value;
-                Node_t rv = oper->right->value;
-
-                if (lv % rv == 0)
-                {
-                    return _NUM(lv / rv);
-                }
-                Node_t gcd = Gcd(lv, rv);
-                return _DIV(_NUM(lv / gcd), _NUM(rv / gcd));
-            }
+            return _NUM(1);
         }
     }
 
     return oper;
 }
 
+// НОД
 Node_t Gcd(Node_t a, Node_t b)
 {
     if (b == 0)
@@ -226,18 +234,23 @@ char NodeEqual(Node* node1, Node* node2)
 
     if ((!node1) || (!node2)) return 0;
 
-    if (node1->type == node2->type && (node2->type == NUM || node2->type == VAR)) return 1;
-
-    if ((node1->type == node2->type) && (node2->type == add_v || node2->type == mul_v))
+    if (node1->type == node2->type && node1->value == node2->value && node1->sign == node2->sign && NodeEqual(node1->left, node2->left) && NodeEqual(node1->right, node2->right))
     {
-        return (NodeEqual(node1->left, node2->left) && NodeEqual(node1->right, node2->right)) || 
-               (NodeEqual(node1->right, node2->left) && NodeEqual(node1->left, node2->right));
+        return 1;
     }
-    
-    if (node1->type == node2->type)
-    {
-        return NodeEqual(node1->left, node2->left) && NodeEqual(node1->right, node2->right);
-    }
-
     return 0;
+    // if (node1->type == node2->type && (node2->type == NUM || node2->type == VAR)) return 1;
+
+    // if ((node1->type == node2->type) && (node2->type == add_v || node2->type == mul_v))
+    // {
+    //     return (NodeEqual(node1->left, node2->left) && NodeEqual(node1->right, node2->right)) || 
+    //            (NodeEqual(node1->right, node2->left) && NodeEqual(node1->left, node2->right));
+    // }
+    
+    // if (node1->type == node2->type)
+    // {
+    //     return NodeEqual(node1->left, node2->left) && NodeEqual(node1->right, node2->right);
+    // }
+
+    // return 0;
 }

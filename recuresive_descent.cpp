@@ -7,7 +7,9 @@
 
 static int p = 0;
 static int Max_Size_Name = 30;
-static const char* functions[7] = {"exp", "ln", "pow" ,"sqrt", "sin", "cos", "tg"};
+static const char* functions[] = {"exp", "ln", "pow" ,"sqrt", "sin", "cos", "tg"};
+
+static const size_t func_array_size = sizeof(functions) / sizeof(*functions); 
 
 Node* GetG(const char* s)
 {
